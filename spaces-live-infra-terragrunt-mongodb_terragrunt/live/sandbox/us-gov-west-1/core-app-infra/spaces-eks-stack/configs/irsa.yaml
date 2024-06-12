@@ -1,0 +1,334 @@
+roles:
+- app_name: business-insights
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: cds
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    - neptune-db:*
+    - lambda:*
+    resources:
+    - "*"
+- app_name: cds-dispatcher
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    - neptune-db:*
+    - lambda:*
+    resources:
+    - "*"
+- app_name: cls
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: dashboard-frontend
+  policy:
+  - allowed_actions:
+    - s3:ListBucket
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    - ssm:GetParameters
+    - ssm:GetParameters
+    - ssm:DescribeParameters
+    resources:
+    - "*"
+- app_name: dashboard-api
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: env-metrics
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: firehose-server
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: location-receiver
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: nss
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: openroaming-hotspot-server
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: rich-map-service
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: space-utilisation
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: smartworkspace-engine
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: smartworkspace-frontend
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: smartworkspace-backend
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: firehose-streams
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: openroaming-auth-service
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: plugin-streams
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: plugin-api-server
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: captive-portals
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: subscriber-streams
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: radius-engine
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: adsp
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: tms
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: smart-licensing
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: data-export
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: amz-firehose-engine
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: rule-engine
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: energy-utilization
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: api-gateway
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: common-buffer
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: central-auth
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+  - sid: DynamoDBIndexAndStreamAccess
+    allowed_actions:
+    - dynamodb:GetShardIterator
+    - dynamodb:Scan
+    - dynamodb:Query
+    - dynamodb:DescribeStream
+    - dynamodb:GetRecords
+    - dynamodb:ListStreams
+    resources:
+    - "*"
+  - sid: DynamoDBTableAccess
+    allowed_actions:
+    - dynamodb:BatchGetItem
+    - dynamodb:BatchWriteItem
+    - dynamodb:ConditionCheckItem
+    - dynamodb:PutItem
+    - dynamodb:DescribeTable
+    - dynamodb:DeleteItem
+    - dynamodb:GetItem
+    - dynamodb:Scan
+    - dynamodb:Query
+    - dynamodb:UpdateItem
+    resources:
+    - "*"
+  - sid: DynamoDBDescribeLimitsAccess
+    allowed_actions:
+    - dynamodb:DescribeLimits
+    resources:
+    - "*"
+- app_name: ca-server
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: audit-trail-parser
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: or-hs-server
+  policy:
+  - allowed_actions:
+    - s3:ListBucket
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: rightnow-wifi
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: locationanalytics
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: proximity-dataout
+  policy:
+  - allowed_actions:
+    - s3:GetObject
+    - s3:PutObject
+    - s3:ListObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: mapservices
+  policy:
+  - allowed_actions:
+    - s3:PutObject
+    - s3:GetObject
+    - s3:ListBucket
+    - s3:DeleteObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"
+- app_name: int-api
+  policy:
+  - allowed_actions:
+    - s3:PutObject
+    - s3:GetObject
+    - s3:ListBucket
+    - s3:DeleteObject
+    - secretsmanager:GetSecretValue
+    resources:
+    - "*"

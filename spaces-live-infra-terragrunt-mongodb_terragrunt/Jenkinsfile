@@ -1,0 +1,196 @@
+pipeline {
+    agent  any
+
+    environment {
+        TOOLS_DIR = "${WORKSPACE}/tools"
+        PATH = "/users/dnaspace/bin:${env.PATH}"
+        GH_INTERNAL_HOST = '52.222.34.71'
+        GITLAB_TOKEN = credentials('gitlab-argo-token')
+    }
+
+    parameters {
+        string(name: 'Directory', defaultValue: '', description: 'Directory to trigger Terragrunt')
+        booleanParam(name: 'AUTOAPPROVE', defaultValue: false, description: 'Auto Approve Deployment?')
+        booleanParam(name: 'DESTROY', defaultValue: false, description: 'Destroy Infra?')
+    }
+
+    stages {
+        stage('terragrunt init') {
+            steps {
+
+                    withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-shared-account-govcloud',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        script {
+                            if (params.AUTOAPPROVE != true) {
+                            dir("${workspace}") {
+                                sh """
+                                ls -lart
+                                pwd=\$(pwd)
+                                cd \$pwd/scripts/
+                                ./get-modified-dir.sh "${params.Directory}" "${env.GITLAB_TOKEN_PSW}"
+                                ./terragrunt-execution.sh init \$pwd
+                            """
+                            }
+                            }
+                        }
+                    }
+            }
+        }
+
+        // stage('terragrunt validate') {
+        //     steps {
+        //      withCredentials([[
+        //         $class: 'AmazonWebServicesCredentialsBinding',
+        //         credentialsId: "aws-shared-account",
+        //         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        //         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+        //          ]]) {
+        //         script {
+        //             def commitId=sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+        //             def infraPath=sh(script:"./get-modified-dir.sh ${commitId}", returnStdout:true).trim()
+        //             if(infraPath.isEmpty()){
+        //                 error("No changes in environment detected")
+        //             }
+        //             else{
+        //             echo 'Changes Detected'
+        //             echo infraPath
+        //             dir("./tg-configs-${BRANCH_NAME}-${BUILD_NUMBER}") {
+        //             checkout scm
+        //             sh "pwd"
+        //             sh "ls"
+        //             echo ' Directory for Change'
+        //             echo infraPath
+        //             dir(path: infraPath) {
+        //             sh 'aws sts get-caller-identity'
+        //             sh "terragrunt validate --terragrunt-tfpath ${TERRAFORM_DIR}/terraform"
+        //             // sh(script:"./terragrunt-all.sh validate")
+        //             }
+        //             }
+        //             }
+        //         }
+        //     }
+        //     }
+        // }
+
+            stage('terragrunt plan') {
+                steps {
+
+                    withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-shared-account-govcloud',
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                 ]]) {
+                            script {
+                                if (params.AUTOAPPROVE != true) {
+                                    if (params.DESTROY != true) {
+                                dir("${workspace}") {
+                                    sh """
+                            ls -lart
+                            pwd=\$(pwd)
+                            cd \$pwd/scripts/
+                            ./get-modified-dir.sh "${params.Directory}" "${env.GITLAB_TOKEN_PSW}"
+                            ./terragrunt-execution.sh plan \$pwd
+                        """
+                                }
+                                }
+                                else {
+                                dir("${workspace}") {
+                                    sh """
+                            cd "${params.Directory}"
+                            terragrunt plan -destroy -no-color --terragrunt-ignore-external-dependencies --terragrunt-non-interactive --terragrunt-tfpath /data/terraform/1.5.4/terraform
+                        """  
+                                }
+                                }
+                            }
+                 }
+
+                }
+                }
+            }
+
+            stage('terragrunt apply') {
+                when {
+                    expression {
+                        env.BRANCH_NAME == 'main'
+                    }
+                }
+                steps {
+                    withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-shared-account-govcloud',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                 ]]) {
+
+                        script {
+                            if (params.AUTOAPPROVE == true) {
+                                if (params.DESTROY != true) {
+                                    dir("${workspace}") {
+                                        sh """
+                                        ls -lart
+                                        pwd=\$(pwd)
+                                        cd \$pwd/scripts/
+                                        ./get-modified-dir.sh "${params.Directory}" "${env.GITLAB_TOKEN_PSW}"
+                                        ./terragrunt-execution.sh apply \$pwd
+                                    """
+                                    }
+                                }
+                                else {
+                                    dir("${workspace}") {
+                                        sh """
+                                        cd "${params.Directory}"
+                                        terragrunt destroy -no-color --terragrunt-ignore-external-dependencies --terragrunt-non-interactive -auto-approve --terragrunt-tfpath /data/terraform/1.5.4/terraform
+                                    """
+                                    }    
+                                }
+
+                            }
+                            else {
+                                if (params.DESTROY != true) {
+                                input message: 'Deploy Infrastructure?', ok: 'Proceed'
+                                dir("${workspace}") {
+                                    sh """
+                                    ls -lart
+                                    pwd=\$(pwd)
+                                    cd \$pwd/scripts/
+                                    ./get-modified-dir.sh "${params.Directory}" "${env.GITLAB_TOKEN_PSW}"
+                                    ./terragrunt-execution.sh apply \$pwd
+                                """
+                                }
+                            }
+                            else {
+                                input message: 'DESTROY Infrastructure?', ok: 'Proceed'
+                                dir("${workspace}") {
+                                    sh """
+                            cd "${params.Directory}"
+                            terragrunt destroy -no-color --terragrunt-ignore-external-dependencies --terragrunt-non-interactive -auto-approve --terragrunt-tfpath /data/terraform/1.5.4/terraform
+                                """
+                                }
+                            }
+                            }
+                        }
+                    }
+                 }
+                }
+            }
+
+
+        post {
+            cleanup {
+                cleanWs()
+                deleteDir()
+                dir("${workspace}@tmp") {
+                    deleteDir()
+                }
+                dir("${workspace}@script") {
+                    deleteDir()
+                }
+            }
+        }
+}
+//

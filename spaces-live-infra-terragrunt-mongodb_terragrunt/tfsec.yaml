@@ -1,0 +1,11 @@
+---
+exclude:
+  - aws-lambda-enable-tracing
+  - aws-ec2-no-public-ingress-acl
+  - aws-ec2-no-public-egress-sgr
+  - aws-iam-no-policy-wildcards
+  - aws-eks-enable-control-plane-logging
+  - aws-ec2-require-vpc-flow-logs-for-all-vpcs
+  - aws-ec2-add-description-to-security-group
+  - aws-cloudwatch-log-group-customer-key
+  - aws-ec2-add-description-to-security-group-rule
